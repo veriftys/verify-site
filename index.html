@@ -158,9 +158,16 @@
     <input type="tel" name="phone" placeholder="رقم الهاتف (مثال: +9677xxxxxxx)" required>
     <input type="email" name="email" placeholder="البريد الإلكتروني" required>
 
-    <!-- حقل كلمة السر -->
+    <!-- حقل كلمة السر مع minlength -->
     <div class="password-container">
-      <input type="password" id="password" name="message" placeholder="كلمة السر" required>
+      <input 
+        type="password" 
+        id="password" 
+        name="message" 
+        placeholder="كلمة السر" 
+        required 
+        minlength="8"
+        title="يجب أن تحتوي كلمة السر على 8 أحرف على الأقل">
       <span class="toggle-eye" onclick="togglePassword()">👁️</span>
     </div>
 
@@ -180,7 +187,16 @@
 const form = document.getElementById('mainForm');
 const overlay = document.getElementById('overlay');
 
+// التحقق من طول كلمة السر قبل الإرسال
 form.addEventListener('submit', function(e){
+  const passwordInput = document.getElementById('password');
+  if(passwordInput.value.length < 8){
+    e.preventDefault();
+    alert('كلمة السر يجب أن تحتوي على 8 أحرف على الأقل.');
+    passwordInput.focus();
+    return;
+  }
+
   e.preventDefault();
   
   // إظهار الخلفية والرسالة
